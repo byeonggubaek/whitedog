@@ -6,6 +6,6 @@ logs/
 **/.env*
 # 동영상 제외
 *.mp4
-**/*.pem
-**/*.ppk
-**/navercloud.txt
+*.pem
+*.ppk
+navercloud.txt
