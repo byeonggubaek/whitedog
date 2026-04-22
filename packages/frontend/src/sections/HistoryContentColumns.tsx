@@ -46,35 +46,6 @@ export const columns: ColumnDef<Payment>[] = [
     enableHiding: false,
   },  
   {
-    accessorKey: "status",
-    header: "상태",
-  },
-  {
-    accessorKey: "email",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        이메일
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-  },
-  {
-    accessorKey: "amount",
-    header: () => <div className="text-right">금액</div>,
-    cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("amount"))
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(amount)
- 
-      return <div className="text-right font-medium">{formatted}</div>
-    },
-  },
-  {
     id: "actions",
     cell: ({ row }) => {
       const payment = row.original
@@ -102,4 +73,48 @@ export const columns: ColumnDef<Payment>[] = [
       )
     },
   },    
+  {
+    accessorKey: "status",
+    header: "상태",
+  },
+  {
+    accessorKey: "email",
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        이메일
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
+  },
+  {
+    accessorKey: "amount",
+    header: () => <div className="text-right">금액</div>,
+    cell: ({ row }) => {
+      const amount = parseFloat(row.getValue("amount"))
+      const formatted = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+      }).format(amount)
+ 
+      return <div className="text-right font-medium">{formatted}</div>
+    },
+    footer: ({ table }) => {
+      const total = table
+        .getFilteredRowModel()
+        .rows
+        .reduce((sum, row) => sum + Number(row.getValue("amount")), 0)
+
+      return (
+        <div className="text-right font-bold">
+          {new Intl.NumberFormat("en-US", {
+            style: "currency",
+            currency: "USD",
+          }).format(total)}
+        </div>
+      )
+    },
+  },
 ]

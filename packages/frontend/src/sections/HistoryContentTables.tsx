@@ -1,8 +1,7 @@
 import {
   type ColumnDef,
-  type ColumnFiltersState,
   type SortingState,
-  type VisibilityState, 
+  type VisibilityState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -21,6 +20,7 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -40,7 +40,7 @@ export function DataTable<TData, TValue>({
   data,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([])  
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]) 
+  const [globalFilter, setGlobalFilter] = useState("")
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState({})
 
@@ -48,7 +48,7 @@ export function DataTable<TData, TValue>({
     data,
     columns,
     onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,    
+    onGlobalFilterChange: setGlobalFilter,    
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
     getCoreRowModel: getCoreRowModel(),
@@ -57,7 +57,7 @@ export function DataTable<TData, TValue>({
     getFilteredRowModel: getFilteredRowModel(),    
     state: {
       sorting,
-      columnFilters,
+      globalFilter,
       columnVisibility,
       rowSelection,
     },    
@@ -67,17 +67,15 @@ export function DataTable<TData, TValue>({
     <div>    
       <div className="flex items-center py-4">
         <Input
-          placeholder="Filter emails..."
-          value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("email")?.setFilterValue(event.target.value)
-          }
+          placeholder="조건 검색..."
+          value={globalFilter}
+          onChange={(e) => setGlobalFilter(e.target.value)}
           className="max-w-sm"
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
-              Columns
+              컬럼 설정
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
@@ -145,6 +143,19 @@ export function DataTable<TData, TValue>({
               </TableRow>
             )}
           </TableBody>
+          <TableFooter>
+            {table.getFooterGroups().map((footerGroup) => (
+              <TableRow key={footerGroup.id}>
+                {footerGroup.headers.map((header) => (
+                  <TableCell key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(header.column.columnDef.footer, header.getContext())}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableFooter>          
         </Table>
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
